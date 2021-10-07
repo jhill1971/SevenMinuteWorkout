@@ -16,6 +16,9 @@ class ExerciseActivity : AppCompatActivity() {
     private var exerciseTimer: CountDownTimer? = null
     private var exerciseProgress: Int = 0
 
+    private var exerciseList: ArrayList<ExerciseModel>? = null
+    private var currentExercisePosition = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise)
@@ -29,7 +32,9 @@ class ExerciseActivity : AppCompatActivity() {
             onBackPressed()
         }
 
+        exerciseList = Constants.defaultExerciseList()
         setUpRestView()
+
     }
 
     override fun onDestroy() {
@@ -53,7 +58,7 @@ class ExerciseActivity : AppCompatActivity() {
             restTimer!!.cancel()
             restProgress = 0
         }
-
+        tv_upcomingExercise.text = exerciseList!![currentExercisePosition + 1].getName()
         setRestProgressBar()
     }
 
@@ -68,6 +73,7 @@ class ExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+                currentExercisePosition ++
                 setUpExerciseView()
             }
 
@@ -85,6 +91,9 @@ class ExerciseActivity : AppCompatActivity() {
 
         setExerciseProgressBar()
 
+        iv_image.setImageResource(exerciseList!![currentExercisePosition].getImage())
+        tv_ExerciseName.text = exerciseList!![currentExercisePosition].getName()
+
     }
 
 
@@ -98,11 +107,13 @@ class ExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(
-                    this@ExerciseActivity,
-                    "now finish the exercise",
-                    Toast.LENGTH_SHORT
-                ).show()
+                if (currentExercisePosition < exerciseList?.size!! - 1){
+                    setUpRestView()
+                }else {
+                    Toast.makeText(this@ExerciseActivity,
+                    "Congratulations! You have completed the 7 minute workout.",
+                    Toast.LENGTH_SHORT).show()
+                }
             }
 
         }.start()
